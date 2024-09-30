@@ -18,6 +18,8 @@ struct rect {
 	GLclampf b;
 	GLclampf a = 0;
 
+	GLfloat sx = 0.01f;
+	GLfloat sy = 0.01f;
 
 	rect() {
 
@@ -48,6 +50,7 @@ void clamp_pos(GLfloat* input_pos);
 void Mouse(int button, int state, int x, int y);
 void diagnoal();
 void TimerFunction(int value);
+void rectangles_remember();
 
 int rectcount = 0;
 int stop_func = 0;
@@ -100,6 +103,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 {
 	switch (key) {
 	case '1':
+		rectangles_remember();
 		glutTimerFunc(10, TimerFunction, 1);
 		std::cout << "1\n";
 		break;
@@ -178,17 +182,27 @@ void draw_rect(int index) {
 }
 
 void diagnoal() {
-	if(!rectangles_tmp.empty()) rectangles_tmp.clear();
 	for (int i = 0; i < rectcount; i++) {
-		rectangles_tmp.push_back(rectangles[i]);
+		rectangles[i].x1 += rectangles[i].sx;
+		rectangles[i].x2 += rectangles[i].sx;
+		rectangles[i].y1 += rectangles[i].sy;
+		rectangles[i].y2 += rectangles[i].sy;
 	}
 
-	std::cout << "asdf\n";
+	std::cout << rectangles[0].x1 << std::endl;
 }
 
 void TimerFunction(int value)
 {
 	diagnoal();
+	glutPostRedisplay();
 	if (!stop_func) glutTimerFunc(10, TimerFunction, 1);
 	else stop_func = 0;
+}
+
+void rectangles_remember() {
+	if (!rectangles_tmp.empty()) rectangles_tmp.clear();
+	for (int i = 0; i < rectcount; i++) {
+		rectangles_tmp.push_back(rectangles[i]);
+	}
 }
