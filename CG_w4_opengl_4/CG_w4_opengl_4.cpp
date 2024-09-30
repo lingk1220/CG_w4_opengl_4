@@ -36,6 +36,8 @@ struct rect {
 }rect;
 
 std::vector<struct rect> rectangles;
+std::vector<struct rect> rectangles_tmp;
+
 
 GLvoid drawScene(GLvoid);
 GLvoid Reshape(int w, int h);
@@ -44,9 +46,11 @@ void draw_rect(int index);
 void rectangle_new(GLclampf* input_pos);
 void clamp_pos(GLfloat* input_pos);
 void Mouse(int button, int state, int x, int y);
-
+void diagnoal();
+void TimerFunction(int value);
 
 int rectcount = 0;
+int stop_func = 0;
 
 void main(int argc, char** argv)
 {
@@ -96,6 +100,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 {
 	switch (key) {
 	case '1':
+		glutTimerFunc(10, TimerFunction, 1);
 		std::cout << "1\n";
 		break;
 	case '2':
@@ -113,6 +118,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 
 	case 's':
 	case 'S':
+		stop_func = 1;
 		std::cout << "S\n";
 		break;
 	
@@ -169,4 +175,20 @@ void rectangle_new(GLclampf * input_pos) {
 void draw_rect(int index) {
 	glColor3f(rectangles[index].r, rectangles[index].g, rectangles[index].b);
 	glRectf(rectangles[index].x1, rectangles[index].y1, rectangles[index].x2, rectangles[index].y2);
+}
+
+void diagnoal() {
+	if(!rectangles_tmp.empty()) rectangles_tmp.clear();
+	for (int i = 0; i < rectcount; i++) {
+		rectangles_tmp.push_back(rectangles[i]);
+	}
+
+	std::cout << "asdf\n";
+}
+
+void TimerFunction(int value)
+{
+	diagnoal();
+	if (!stop_func) glutTimerFunc(10, TimerFunction, 1);
+	else stop_func = 0;
 }
