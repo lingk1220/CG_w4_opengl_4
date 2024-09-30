@@ -3,6 +3,8 @@
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>
 #include <vector>
+#include <math.h>
+
 #define RECTINITSIZE 0.1
 #define MAXRECTCOUNT 5
 GLclampf darkgray[4] = { 25.0f / 256, 25.0f / 256 , 25.0f / 256 , 0.0f };
@@ -17,9 +19,11 @@ struct rect {
 	GLclampf g;
 	GLclampf b;
 	GLclampf a = 0;
+	
+	int t = rand() % 360;
 
-	GLfloat sx = 0.01f;
-	GLfloat sy = 0.01f;
+	GLfloat sx = (GLfloat)cos(t) / 100.0f;
+	GLfloat sy = (GLfloat)sin(t) / 100.0f;
 
 	rect() {
 
@@ -51,13 +55,15 @@ void Mouse(int button, int state, int x, int y);
 void diagnoal();
 void TimerFunction(int value);
 void rectangles_remember();
+void rectangles_random_dir();
 
 int rectcount = 0;
 int stop_func = 0;
+int proc_activated = 0;
 
 void main(int argc, char** argv)
 {
-
+	srand((unsigned int)time(NULL));
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
@@ -103,9 +109,16 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 {
 	switch (key) {
 	case '1':
+		if (proc_activated) {
+			stop_func = 1;
+			break;
+		}
+		proc_activated = 1;
 		rectangles_remember();
+		rectangles_random_dir();
 		glutTimerFunc(10, TimerFunction, 1);
 		std::cout << "1\n";
+
 		break;
 	case '2':
 		std::cout << "2\n";
@@ -122,7 +135,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 
 	case 's':
 	case 'S':
-		stop_func = 1;
+		if(proc_activated) stop_func = 1;
 		std::cout << "S\n";
 		break;
 	
@@ -184,9 +197,34 @@ void draw_rect(int index) {
 void diagnoal() {
 	for (int i = 0; i < rectcount; i++) {
 		rectangles[i].x1 += rectangles[i].sx;
+
+		if (rectangles[i].x1 < -1.0f) {
+			rectangles[i].x1 -= 1* rectangles[i].sx;
+			rectangles[i].sx *= -1;
+		}
+
+
 		rectangles[i].x2 += rectangles[i].sx;
+
+		if (rectangles[i].x2 > 1.0f) {
+			rectangles[i].x2 -= 1 * rectangles[i].sx;
+			rectangles[i].sx *= -1;
+		}
+
 		rectangles[i].y1 += rectangles[i].sy;
+		
+		if (rectangles[i].y1 < -1.0f) {
+			rectangles[i].y1 -= 1 * rectangles[i].sy;
+			rectangles[i].sy *= -1;
+		}
+
 		rectangles[i].y2 += rectangles[i].sy;
+
+		if (rectangles[i].y2 > 1.0f) {
+			rectangles[i].y2 -= 1 * rectangles[i].sy;
+			rectangles[i].sy *= -1;
+		}
+
 	}
 
 	std::cout << rectangles[0].x1 << std::endl;
@@ -197,12 +235,23 @@ void TimerFunction(int value)
 	diagnoal();
 	glutPostRedisplay();
 	if (!stop_func) glutTimerFunc(10, TimerFunction, 1);
-	else stop_func = 0;
+	else {
+		proc_activated = 0;
+		stop_func = 0;
+	}
 }
 
 void rectangles_remember() {
 	if (!rectangles_tmp.empty()) rectangles_tmp.clear();
 	for (int i = 0; i < rectcount; i++) {
 		rectangles_tmp.push_back(rectangles[i]);
+	}
+}
+
+void rectangles_random_dir() {
+	for (int i = 0; i < rectcount; i++) {
+		int t = rand() % 360;
+		rectangles[i].sx = (GLfloat)cos(t) / 100.0f;
+		rectangles[i].sy = (GLfloat)sin(t) / 100.0f;
 	}
 }
