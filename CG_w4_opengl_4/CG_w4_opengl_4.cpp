@@ -8,6 +8,8 @@
 #define RECTINITSIZE 0.1
 #define MAXRECTCOUNT 5
 GLclampf darkgray[4] = { 25.0f / 256, 25.0f / 256 , 25.0f / 256 , 0.0f };
+GLfloat	dx[4] = { 1.0f, -1.0f, -1.0f, 1.0f };
+GLfloat dy[4] = { 1.0f, 1.0f, -1.0f, -1.0f };
 
 struct rect {
 	GLfloat x1;
@@ -53,10 +55,11 @@ void rectangle_new(GLclampf* input_pos);
 void clamp_pos(GLfloat* input_pos);
 void Mouse(int button, int state, int x, int y);
 void diagnoal();
+void zigzag();
 void TimerFunction(int value);
 void rectangles_remember();
 void rectangles_random_dir();
-
+void rectangles_zigzag_dir();
 int rectcount = 0;
 int stop_func = 0;
 int proc_activated = 0;
@@ -121,6 +124,14 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 
 		break;
 	case '2':
+		if (proc_activated) {
+			stop_func = 1;
+			break;
+		}
+		proc_activated = 1;
+		rectangles_remember();
+		rectangles_zigzag_dir();
+		glutTimerFunc(10, TimerFunction, 1);
 		std::cout << "2\n";
 		break;
 	case '3':
@@ -230,6 +241,10 @@ void diagnoal() {
 	std::cout << rectangles[0].x1 << std::endl;
 }
 
+void zigzag() {
+	
+}
+
 void TimerFunction(int value)
 {
 	diagnoal();
@@ -253,5 +268,21 @@ void rectangles_random_dir() {
 		int t = rand() % 360;
 		rectangles[i].sx = (GLfloat)cos(t) / 100.0f;
 		rectangles[i].sy = (GLfloat)sin(t) / 100.0f;
+	}
+}
+
+void rectangles_zigzag_dir() {
+	for (int i = 0; i < rectcount; i++) {
+		int d = rand() % 4;
+		rectangles[i].sx = (GLfloat)dx[d] * 1 / 100.0f;
+		rectangles[i].sy = (GLfloat)dy[d] * 0.3 / 100.0f;
+	}
+}
+
+void rectangles_zigzag_change() {
+	for (int i = 0; i < rectcount; i++) {
+		int d = rand() % 4;
+		rectangles[i].sx = (GLfloat)dx[d] * 1 / 100.0f;
+		rectangles[i].sy = (GLfloat)dy[d] * 0.3 / 100.0f;
 	}
 }
