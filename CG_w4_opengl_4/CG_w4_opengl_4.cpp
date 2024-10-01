@@ -60,12 +60,15 @@ void zigzag();
 void diagnoal_timer(int value);
 void zigzag_timer(int value);
 void zigzag_turn_timer(int value);
+void size_change_timer(int value);
+void color_change_timer(int value);
 
 void rectangles_remember();
 void rectangles_random_dir();
 void rectangles_zigzag_dir();
 void rectangles_zigzag_change();
-
+void rectangles_change_size();
+void rectangles_change_color();
 int rectcount = 0;
 int stop_func = 0;
 int proc_activated = 0;
@@ -142,6 +145,13 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		std::cout << "2\n";
 		break;
 	case '3':
+		if (proc_activated) {
+			stop_func = 1;
+			break;
+		}
+		proc_activated = 1;
+		rectangles_remember();
+		glutTimerFunc(10, size_change_timer, 1);
 		std::cout << "3\n";
 		break;
 	case '4':
@@ -284,13 +294,31 @@ void zigzag_timer(int value) {
 
 void zigzag_turn_timer(int value) {
 	rectangles_zigzag_change();
-	if (!stop_func) glutTimerFunc(1000, zigzag_turn_timer, 1);
+	if (!stop_func) glutTimerFunc(500, zigzag_turn_timer, 1);
 	else {
 		proc_activated = 0;
 		stop_func = 0;
 	}
 }
 
+void size_change_timer(int value) {
+	rectangles_change_size();
+	glutPostRedisplay();
+	if (!stop_func) glutTimerFunc(500, size_change_timer, 1);
+	else {
+		proc_activated = 0;
+		stop_func = 0;
+	}
+}
+
+void color_change_timer(int value) {
+	rectangles_change_color();
+	if (!stop_func) glutTimerFunc(500, color_change_timer, 1);
+	else {
+		proc_activated = 0;
+		stop_func = 0;
+	}
+}
 void rectangles_remember() {
 	if (!rectangles_tmp.empty()) rectangles_tmp.clear();
 	for (int i = 0; i < rectcount; i++) {
@@ -316,7 +344,56 @@ void rectangles_zigzag_dir() {
 
 void rectangles_zigzag_change() {
 	for (int i = 0; i < rectcount; i++) {
-		std::cout << "ah\n";
+		rectangles[i].sx *= -1;
+	}
+}
+
+void rectangles_change_size() {
+	for (int i = 0; i < rectcount; i++) {
+		std::cout << "ASDF\n";
+		GLfloat tx = (GLfloat)(rand() % 20 - 10) / 100;
+		GLfloat ty = (GLfloat)(rand() % 20 - 10) / 100;
+
+		rectangles[i].x1 -= tx;
+
+		if (rectangles[i].x1 < -1.0f) {
+			rectangles[i].x1 = -1.0f;
+		}
+
+
+		rectangles[i].x2 += tx;
+
+		if (rectangles[i].x2 > 1.0f) {
+			rectangles[i].x2 = 1.0f;
+		}
+
+		rectangles[i].y1 -= ty;
+
+		if (rectangles[i].y1 < -1.0f) {
+			rectangles[i].y1 = -1.0f;
+		}
+
+		rectangles[i].y2 += ty;
+
+		if (rectangles[i].y2 > 1.0f) {
+			rectangles[i].y2 = 1.0f;
+		}
+
+		if (rectangles[i].x2 - rectangles[i].x1 < 0.3f) {
+			rectangles[i].x2 += 0.05f;
+			rectangles[i].x1 -= 0.05f;
+		}
+
+		if (rectangles[i].y2 - rectangles[i].y1 < 0.3f) {
+			rectangles[i].y2 += 0.05f;
+			rectangles[i].y1 -= 0.05f;
+		}
+	}
+
+}
+
+void rectangles_change_color() {
+	for (int i = 0; i < rectcount; i++) {
 		rectangles[i].sx *= -1;
 	}
 }
