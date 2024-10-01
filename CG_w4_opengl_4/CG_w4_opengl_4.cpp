@@ -54,6 +54,8 @@ void draw_rect(int index);
 void rectangle_new(GLclampf* input_pos);
 void clamp_pos(GLfloat* input_pos);
 void Mouse(int button, int state, int x, int y);
+void reset();
+
 void diagnoal();
 void zigzag();
 
@@ -64,6 +66,7 @@ void size_change_timer(int value);
 void color_change_timer(int value);
 
 void rectangles_remember();
+void rectangles_origin();
 void rectangles_random_dir();
 void rectangles_zigzag_dir();
 void rectangles_zigzag_change();
@@ -171,6 +174,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	case 's':
 	case 'S':
 		if(proc_activated) stop_func = 1;
+		rectangles_origin();
 		std::cout << "S\n";
 		break;
 	
@@ -181,6 +185,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 
 	case 'r':
 	case 'R':
+		reset();
 		std::cout << "R\n";
 		break;
 
@@ -343,6 +348,26 @@ void rectangles_remember() {
 	for (int i = 0; i < rectcount; i++) {
 		rectangles_tmp.push_back(rectangles[i]);
 	}
+}
+
+void rectangles_origin() {
+	if (!rectangles.empty()) rectangles.clear();
+
+
+	for (int i = 0; i < rectcount; i++) {
+		rectangles.push_back(rectangles_tmp[i]);
+		
+	}
+
+	if (!rectangles_tmp.empty()) rectangles_tmp.clear();
+
+}
+
+void reset() {
+	rectangles.clear();
+	rectcount = 0;
+	stop_func = 0;
+	proc_activated = 0;
 }
 
 void rectangles_random_dir() {
