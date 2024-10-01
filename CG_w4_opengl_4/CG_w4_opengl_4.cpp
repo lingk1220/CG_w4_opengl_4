@@ -56,10 +56,16 @@ void clamp_pos(GLfloat* input_pos);
 void Mouse(int button, int state, int x, int y);
 void diagnoal();
 void zigzag();
-void TimerFunction(int value);
+
+void diagnoal_timer(int value);
+void zigzag_timer(int value);
+void zigzag_turn_timer(int value);
+
 void rectangles_remember();
 void rectangles_random_dir();
 void rectangles_zigzag_dir();
+void rectangles_zigzag_change();
+
 int rectcount = 0;
 int stop_func = 0;
 int proc_activated = 0;
@@ -119,7 +125,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		proc_activated = 1;
 		rectangles_remember();
 		rectangles_random_dir();
-		glutTimerFunc(10, TimerFunction, 1);
+		glutTimerFunc(10, diagnoal_timer, 1);
 		std::cout << "1\n";
 
 		break;
@@ -131,7 +137,8 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		proc_activated = 1;
 		rectangles_remember();
 		rectangles_zigzag_dir();
-		glutTimerFunc(10, TimerFunction, 1);
+		glutTimerFunc(10, zigzag_timer, 1);
+		glutTimerFunc(500, zigzag_turn_timer, 1);
 		std::cout << "2\n";
 		break;
 	case '3':
@@ -242,14 +249,42 @@ void diagnoal() {
 }
 
 void zigzag() {
-	
+	for (int i = 0; i < rectcount; i++) {
+		rectangles[i].x1 += rectangles[i].sx;
+		rectangles[i].x2 += rectangles[i].sx;
+		rectangles[i].y1 += rectangles[i].sy;
+		rectangles[i].y2 += rectangles[i].sy;
+		std::cout << rectangles[i].sx << std::endl;
+
+
+	}
 }
 
-void TimerFunction(int value)
+void diagnoal_timer(int value)
 {
 	diagnoal();
 	glutPostRedisplay();
-	if (!stop_func) glutTimerFunc(10, TimerFunction, 1);
+	if (!stop_func) glutTimerFunc(10, diagnoal_timer, 1);
+	else {
+		proc_activated = 0;
+		stop_func = 0;
+	}
+}
+
+
+void zigzag_timer(int value) {
+	zigzag();
+	glutPostRedisplay();
+	if (!stop_func) glutTimerFunc(10, zigzag_timer, 1);
+	else {
+		proc_activated = 0;
+		stop_func = 0;
+	}
+}
+
+void zigzag_turn_timer(int value) {
+	rectangles_zigzag_change();
+	if (!stop_func) glutTimerFunc(1000, zigzag_turn_timer, 1);
 	else {
 		proc_activated = 0;
 		stop_func = 0;
@@ -274,15 +309,14 @@ void rectangles_random_dir() {
 void rectangles_zigzag_dir() {
 	for (int i = 0; i < rectcount; i++) {
 		int d = rand() % 4;
-		rectangles[i].sx = (GLfloat)dx[d] * 1 / 100.0f;
-		rectangles[i].sy = (GLfloat)dy[d] * 0.3 / 100.0f;
+		rectangles[i].sx = (GLfloat)dx[d] * 1.5 / 100.0f;
+		rectangles[i].sy = (GLfloat)dy[d] * 0.6 / 100.0f;
 	}
 }
 
 void rectangles_zigzag_change() {
 	for (int i = 0; i < rectcount; i++) {
-		int d = rand() % 4;
-		rectangles[i].sx = (GLfloat)dx[d] * 1 / 100.0f;
-		rectangles[i].sy = (GLfloat)dy[d] * 0.3 / 100.0f;
+		std::cout << "ah\n";
+		rectangles[i].sx *= -1;
 	}
 }
