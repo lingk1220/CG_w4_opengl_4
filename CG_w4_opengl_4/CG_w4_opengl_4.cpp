@@ -155,6 +155,13 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		std::cout << "3\n";
 		break;
 	case '4':
+		if (proc_activated) {
+			stop_func = 1;
+			break;
+		}
+		proc_activated = 1;
+		rectangles_remember();
+		glutTimerFunc(10, color_change_timer, 1);
 		std::cout << "4\n";
 		break;
 	case '5':
@@ -270,11 +277,12 @@ void zigzag() {
 	}
 }
 
-void diagnoal_timer(int value)
-{
-	diagnoal();
-	glutPostRedisplay();
-	if (!stop_func) glutTimerFunc(10, diagnoal_timer, 1);
+void diagnoal_timer(int value){	
+	if (!stop_func) {
+		diagnoal();
+		glutPostRedisplay();
+		glutTimerFunc(10, diagnoal_timer, 1);
+	}
 	else {
 		proc_activated = 0;
 		stop_func = 0;
@@ -283,9 +291,11 @@ void diagnoal_timer(int value)
 
 
 void zigzag_timer(int value) {
-	zigzag();
-	glutPostRedisplay();
-	if (!stop_func) glutTimerFunc(10, zigzag_timer, 1);
+	if (!stop_func) {
+		zigzag();
+		glutPostRedisplay();
+		glutTimerFunc(10, zigzag_timer, 1);
+	}
 	else {
 		proc_activated = 0;
 		stop_func = 0;
@@ -293,8 +303,10 @@ void zigzag_timer(int value) {
 }
 
 void zigzag_turn_timer(int value) {
-	rectangles_zigzag_change();
-	if (!stop_func) glutTimerFunc(500, zigzag_turn_timer, 1);
+	if (!stop_func) {
+		rectangles_zigzag_change();
+		glutTimerFunc(500, zigzag_turn_timer, 1);
+	}
 	else {
 		proc_activated = 0;
 		stop_func = 0;
@@ -302,9 +314,12 @@ void zigzag_turn_timer(int value) {
 }
 
 void size_change_timer(int value) {
-	rectangles_change_size();
-	glutPostRedisplay();
-	if (!stop_func) glutTimerFunc(500, size_change_timer, 1);
+
+	if (!stop_func) {
+		rectangles_change_size();
+		glutPostRedisplay();
+		glutTimerFunc(500, size_change_timer, 1);
+	}
 	else {
 		proc_activated = 0;
 		stop_func = 0;
@@ -312,8 +327,12 @@ void size_change_timer(int value) {
 }
 
 void color_change_timer(int value) {
-	rectangles_change_color();
-	if (!stop_func) glutTimerFunc(500, color_change_timer, 1);
+
+	if (!stop_func) {
+		rectangles_change_color();
+		glutPostRedisplay();
+		glutTimerFunc(500, color_change_timer, 1);
+	}
 	else {
 		proc_activated = 0;
 		stop_func = 0;
@@ -350,7 +369,6 @@ void rectangles_zigzag_change() {
 
 void rectangles_change_size() {
 	for (int i = 0; i < rectcount; i++) {
-		std::cout << "ASDF\n";
 		GLfloat tx = (GLfloat)(rand() % 20 - 10) / 100;
 		GLfloat ty = (GLfloat)(rand() % 20 - 10) / 100;
 
@@ -394,6 +412,13 @@ void rectangles_change_size() {
 
 void rectangles_change_color() {
 	for (int i = 0; i < rectcount; i++) {
-		rectangles[i].sx *= -1;
+
+		GLfloat r = (GLfloat)(rand() % 256) / 256;
+		GLfloat g = (GLfloat)(rand() % 256) / 256;
+		GLfloat b = (GLfloat)(rand() % 256) / 256;
+
+		rectangles[i].r = r;
+		rectangles[i].g = g;
+		rectangles[i].b = b;
 	}
 }
